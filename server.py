@@ -15,8 +15,8 @@ app = FastAPI()
 model = load_model()
 tokenizer = load_tokenizer()
 
-@app.post("/interpret")
-async def interpret(token: str = Form(...), img: UploadFile = File(...), ans: str = Form(...)):
+@app.post("/prove")
+async def prove(token: str = Form(...), img: UploadFile = File(...), ans: str = Form(...)):
     image_bytes = await img.read()
     image = Image.open(io.BytesIO(image_bytes)).convert("RGB")
     image_array = np.array(image)
@@ -29,10 +29,18 @@ async def interpret(token: str = Form(...), img: UploadFile = File(...), ans: st
     except Exception as e:
         print("Error" + str(e))
         return {"token": token, "correct": False, "exception" : True}
+@app.post("/interpret")
+async def interpret(img: UploadFile = File(...)):
+    image_bytes = await img.read()
+    image = Image.open(io.BytesIO(image_bytes)).convert("RGB")
+    image_array = np.array(image)
+    latex = img2latex(model, tokenizer, [image_array])[0]
+    stripped_latex = strip(latex)
+    return {"interpreted": stripped_latex}
 
 def strip(latex: str) -> str:
     latex.strip()
-    latex = re.sub(r'^\\\[(.*)\\\]$', r'\1', latex, flags=re.DOTALL)
+    latex = re.sub(r'^\\\[(.*)\\]$', r'\1', latex, flags=re.DOTALL)
     latex = re.sub(r'^\$\$(.*)\$\$$', r'\1', latex, flags=re.DOTALL)
     latex = re.sub(r'^\$(.*)\$$', r'\1', latex, flags=re.DOTALL)
     return latex.strip()
