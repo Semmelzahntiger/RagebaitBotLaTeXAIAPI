@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:1
-FROM python:3.12-alpine
+FROM python:3.12-slim
 WORKDIR /code
 ENV PORT=7779
 COPY requirements.txt .
