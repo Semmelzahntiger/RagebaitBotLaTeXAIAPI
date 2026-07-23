@@ -1,14 +1,14 @@
-import uvicorn
-from fastapi import FastAPI, Request, Response, UploadFile, File, Form
-from PIL import Image
-
 import io
+import os
+import re
 
+import numpy as np
+import uvicorn
+from PIL import Image
+from fastapi import FastAPI, UploadFile, File, Form
+from sympy import simplify
 from sympy.parsing.latex import parse_latex
 from texteller import load_model, load_tokenizer, img2latex
-import numpy as np
-import re
-from sympy import simplify
 
 app = FastAPI()
 
@@ -56,4 +56,5 @@ def equalLatex(latex1: str, latex2: str) -> bool:
     return simplify(expr1 - expr2) == 0
 
 if __name__ == '__main__':
-    uvicorn.run(app, host='0.0.0.0', port=7779)
+    configuredPort = int(os.environ['PORT'])
+    uvicorn.run(app, host='0.0.0.0', port=configuredPort)
