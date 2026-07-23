@@ -29,6 +29,10 @@ async def prove(token: str = Form(...), img: UploadFile = File(...), ans: str = 
     except Exception as e:
         print("Error" + str(e))
         return {"token": token, "correct": False, "exception" : True}
+
+@app.get("")
+async def hello():
+    return {"message": "Hier gibts nichts du Wissikh"}
 @app.post("/interpret")
 async def interpret(img: UploadFile = File(...)):
     image_bytes = await img.read()
